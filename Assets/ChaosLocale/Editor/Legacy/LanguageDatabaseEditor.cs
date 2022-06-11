@@ -7,14 +7,14 @@ using ChaosLocale.Scripts.Core.Data;
 using Locale.Scripts;
 using UnityEngine;
 using UnityEditor;
-using Word = ChaosLocale.Scripts.Core.Data.Word;
+using WordLegacy = ChaosLocale.Scripts.Core.Data.WordLegacy;
 
 namespace Localization
 {
     public class LanguageDatabaseEditor : EditorWindow
     {
-        private LanguageDatabase languageDatabase;
-        private List<Word> dataList;
+        private LanguageDatabaseLegacy languageDatabaseLegacy;
+        private List<WordLegacy> dataList;
         private const string DATABASE_PATH = @"Assets/LanguageDatabase.asset";
         private int count = 0;
         private int _maxScrollHeight;
@@ -22,46 +22,46 @@ namespace Localization
         private string searchText;
         private Dictionary<string, bool> groupIsOpen; 
         
-        [MenuItem("Window/ChaosLocalization")]
+        [MenuItem("Window/Localization/Legacy v1.0")]
         public static void Init()
         {
             LanguageDatabaseEditor window = EditorWindow.GetWindow<LanguageDatabaseEditor>();
             window.minSize = new Vector2(440, 400);
-            window.titleContent = new GUIContent("Localization Editor");
+            window.titleContent = new GUIContent("Localization v1.0");
             window.Show();
         }
 
         void OnEnable()
         {
-            if (languageDatabase == null)
+            if (languageDatabaseLegacy == null)
             {
                 LoadDatabase();
             }
-            dataList = new List<Word>(languageDatabase.GetDB());
+            dataList = new List<WordLegacy>(languageDatabaseLegacy.GetDB());
             count = dataList.Count;
         }
         
         void LoadDatabase()
         {
-            languageDatabase =
-                (LanguageDatabase) AssetDatabase.LoadAssetAtPath(DATABASE_PATH, typeof(LanguageDatabase));
+            languageDatabaseLegacy =
+                (LanguageDatabaseLegacy) AssetDatabase.LoadAssetAtPath(DATABASE_PATH, typeof(LanguageDatabaseLegacy));
 
-            if (languageDatabase == null)
+            if (languageDatabaseLegacy == null)
                 CreateDatabase();
         }
 
-        private void OverrideDatabase(LanguageDatabase newDb)
+        private void OverrideDatabase(LanguageDatabaseLegacy newDb)
         {
-            languageDatabase = newDb;
+            languageDatabaseLegacy = newDb;
             AssetDatabase.DeleteAsset(DATABASE_PATH);
-            AssetDatabase.CreateAsset(languageDatabase, DATABASE_PATH);
+            AssetDatabase.CreateAsset(languageDatabaseLegacy, DATABASE_PATH);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
         }
         void CreateDatabase()
         {
-            languageDatabase = ScriptableObject.CreateInstance<LanguageDatabase>();
-            AssetDatabase.CreateAsset(languageDatabase, DATABASE_PATH);
+            languageDatabaseLegacy = ScriptableObject.CreateInstance<LanguageDatabaseLegacy>();
+            AssetDatabase.CreateAsset(languageDatabaseLegacy, DATABASE_PATH);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
         }
@@ -81,21 +81,21 @@ namespace Localization
 
         void AddWord()
         {
-            var wd = new Word();
+            var wd = new WordLegacy();
             wd.word = "new word";
             wd.wordTranslation = new List<WordTranslation>();
             var trans = new WordTranslation();
             trans.country = Languages.English;
             trans.meaning = "new word";
             wd.wordTranslation.Add(trans);
-            languageDatabase.Add(wd);
-            dataList = languageDatabase.GetDB();
+            languageDatabaseLegacy.Add(wd);
+            dataList = languageDatabaseLegacy.GetDB();
             count = dataList.Count;
         }
 
         private void Reload()
         {
-            dataList = new List<Word>(languageDatabase.GetDB());
+            dataList = new List<WordLegacy>(languageDatabaseLegacy.GetDB());
             count = dataList.Count;
             Repaint();
         }
@@ -116,9 +116,9 @@ namespace Localization
             
             //Set Source Text
             EditorGUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
-            languageDatabase.sourceLanguage = (Languages) EditorGUI.EnumPopup(
+            languageDatabaseLegacy.sourceLanguage = (Languages) EditorGUI.EnumPopup(
                 GUILayoutUtility.GetRect(0, 12.0f, GUILayout.Width(300)), "Source Lanaguage",
-                languageDatabase.sourceLanguage);
+                languageDatabaseLegacy.sourceLanguage);
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.Space();
             EditorGUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
@@ -184,7 +184,7 @@ namespace Localization
                         return;
                     count--;
                     dataList.RemoveAt(i);
-                    languageDatabase.Remove(i);
+                    languageDatabaseLegacy.Remove(i);
                 }
 
                 EditorGUILayout.EndHorizontal();
@@ -205,14 +205,14 @@ namespace Localization
             if (GUILayout.Button("Save All", GUILayout.Width(100)))
             {
                 isSave = true;
-                EditorUtility.SetDirty(languageDatabase);
+                EditorUtility.SetDirty(languageDatabaseLegacy);
                 ShowNotification(new GUIContent("SAVE !"));
             }
             
             if (GUILayout.Button("Clear all", GUILayout.Width(100)))
             {
                 if(EditorUtility.DisplayDialog("Clear all data?", "Do you really want to clear all translation data?", "no, fuck no!", "yes :)")) return;
-                languageDatabase.ClearAll();
+                languageDatabaseLegacy.ClearAll();
                 Reload();
             }
 
@@ -235,9 +235,9 @@ namespace Localization
         public void Export(string path)
         {
             ProtectFromStupidPeople();
-            languageDatabase.UpdateLangNames();
+            languageDatabaseLegacy.UpdateLangNames();
             var prettyPrint = EditorUtility.DisplayDialog("Export", "Are you evil?", "yes", "no");
-            var jsonDb = (JsonLanguageDatabase) languageDatabase;
+            var jsonDb = (JsonLanguageDatabase) languageDatabaseLegacy;
             var json = JsonUtility.ToJson(jsonDb, !prettyPrint);
             var fl = File.Create(path);
             var writer = new StreamWriter(fl);
@@ -252,9 +252,9 @@ namespace Localization
             foreach (var wd in dataList)
             {
                 var baseTrans = wd.word;
-                if (wd.wordTranslation.Find((word) => word.country == languageDatabase.sourceLanguage) !=
+                if (wd.wordTranslation.Find((word) => word.country == languageDatabaseLegacy.sourceLanguage) !=
                     null) continue;
-                var trans = new WordTranslation {country = languageDatabase.sourceLanguage, meaning = wd.word};
+                var trans = new WordTranslation {country = languageDatabaseLegacy.sourceLanguage, meaning = wd.word};
                 wd.wordTranslation.Add(trans);
             }
         }
@@ -265,9 +265,9 @@ namespace Localization
             var reader = new StreamReader(fl);
             var json = reader.ReadToEnd();
             var jsonDb = JsonUtility.FromJson<JsonLanguageDatabase>(json);
-            languageDatabase = (LanguageDatabase) jsonDb;
-            OverrideDatabase(languageDatabase);
-            EditorUtility.SetDirty(languageDatabase);
+            languageDatabaseLegacy = (LanguageDatabaseLegacy) jsonDb;
+            OverrideDatabase(languageDatabaseLegacy);
+            EditorUtility.SetDirty(languageDatabaseLegacy);
             reader.Close();
             fl.Close();
             Reload();

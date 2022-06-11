@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using ChaosLocale.Scripts.Core.Data;
 using Locale.Scripts;
 using UnityEngine;
-using Word = ChaosLocale.Scripts.Core.Data.Word;
+using WordLegacy = ChaosLocale.Scripts.Core.Data.WordLegacy;
 
 namespace Localization
 {
@@ -12,12 +12,12 @@ namespace Localization
         public List<JsonWord> database;
         public Languages sourceLanguage;
 
-        public static explicit operator JsonLanguageDatabase(LanguageDatabase database)
+        public static explicit operator JsonLanguageDatabase(LanguageDatabaseLegacy databaseLegacy)
         {
             var jsonDb = new JsonLanguageDatabase();
-            var langDb = database.GetDB();
+            var langDb = databaseLegacy.GetDB();
             jsonDb.database = new List<JsonWord>();
-            jsonDb.sourceLanguage = database.sourceLanguage;
+            jsonDb.sourceLanguage = databaseLegacy.sourceLanguage;
             foreach (var word in langDb)
             {
                 var jsonWord = new JsonWord();
@@ -45,15 +45,15 @@ namespace Localization
             return jsonDb;
         }
 
-        public static explicit operator LanguageDatabase(JsonLanguageDatabase jsonDb)
+        public static explicit operator LanguageDatabaseLegacy(JsonLanguageDatabase jsonDb)
         {
-            var langDb = ScriptableObject.CreateInstance<LanguageDatabase>();
+            var langDb = ScriptableObject.CreateInstance<LanguageDatabaseLegacy>();
             langDb.sourceLanguage = jsonDb.sourceLanguage;
-            langDb.database = new List<Word>();
+            langDb.database = new List<WordLegacy>();
             var jsonWords = jsonDb.database;
             foreach (var jsonWord in jsonWords)
             {
-                langDb.database.Add((Word) jsonWord);
+                langDb.database.Add((WordLegacy) jsonWord);
             }
 
             return langDb;
@@ -68,9 +68,9 @@ namespace Localization
         public List<JsonTranslation> meanings;
         public List<string> regular_expressions;
         
-        public static explicit operator Word(JsonWord jsonWord)
+        public static explicit operator WordLegacy(JsonWord jsonWord)
         {
-            var wd = new Word();
+            var wd = new WordLegacy();
             wd.word = jsonWord.key;
             wd.regularExpressions = new List<RegularExpression>();
             foreach (var exp in jsonWord.regular_expressions)

@@ -7,14 +7,14 @@ namespace Locale.Scripts
     public class WordGroup
     {
         public string title;
-        public List<Word> words;
+        public List<WordLegacy> words;
 
         public WordGroup() : this("new group") { }
 
         public WordGroup(string title)
         {
             this.title = title;
-            if (words == null) words = new List<Word>();
+            if (words == null) words = new List<WordLegacy>();
         }
         
     }

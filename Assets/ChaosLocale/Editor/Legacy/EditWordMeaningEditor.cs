@@ -8,14 +8,14 @@ using UnityEngine;
 using UnityEditor;
 using UnityEngine.Networking;
 using LanguageCodes = Locale.Scripts.LanguageCodes;
-using Word = ChaosLocale.Scripts.Core.Data.Word;
+using WordLegacy = ChaosLocale.Scripts.Core.Data.WordLegacy;
 
 namespace Localization
 {
     public class EditWordMeaningEditor : EditorWindow
     {
-        private LanguageDatabase languageDatabase;
-        private List<Word> dataList;
+        private LanguageDatabaseLegacy languageDatabaseLegacy;
+        private List<WordLegacy> dataList;
         private bool _isTranslating = false; 
         private const string DATABASE_PATH = @"Assets/LanguageDatabase.asset";
         private int count = 0;
@@ -23,28 +23,28 @@ namespace Localization
 
         void OnEnable()
         {
-            if (languageDatabase == null)
+            if (languageDatabaseLegacy == null)
             {
                 LoadDatabase();
             }
 
-            dataList = new List<Word>(languageDatabase.GetDB());
+            dataList = new List<WordLegacy>(languageDatabaseLegacy.GetDB());
             count = dataList.Count;
         }
 
         void LoadDatabase()
         {
-            languageDatabase =
-                (LanguageDatabase) AssetDatabase.LoadAssetAtPath(DATABASE_PATH, typeof(LanguageDatabase));
+            languageDatabaseLegacy =
+                (LanguageDatabaseLegacy) AssetDatabase.LoadAssetAtPath(DATABASE_PATH, typeof(LanguageDatabaseLegacy));
 
-            if (languageDatabase == null)
+            if (languageDatabaseLegacy == null)
                 CreateDatabase();
         }
 
         void CreateDatabase()
         {
-            languageDatabase = ScriptableObject.CreateInstance<LanguageDatabase>();
-            AssetDatabase.CreateAsset(languageDatabase, DATABASE_PATH);
+            languageDatabaseLegacy = ScriptableObject.CreateInstance<LanguageDatabaseLegacy>();
+            AssetDatabase.CreateAsset(languageDatabaseLegacy, DATABASE_PATH);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
         }
@@ -77,14 +77,14 @@ namespace Localization
             DisplayMainArea();
         }
 
-        private void TranslateVoid(Word word, WordTranslation translation)
+        private void TranslateVoid(WordLegacy wordLegacy, WordTranslation translation)
         {
-            var sourceText = word.word;
+            var sourceText = wordLegacy.word;
             var baseTranslation =
-                word.wordTranslation.Find((trans) => trans.country == languageDatabase.sourceLanguage);
+                wordLegacy.wordTranslation.Find((trans) => trans.country == languageDatabaseLegacy.sourceLanguage);
             if (baseTranslation != null) sourceText = baseTranslation.meaning;
             
-            EditorCoroutineUtility.StartCoroutine(Translate(sourceText, languageDatabase.sourceLanguage, translation.country,
+            EditorCoroutineUtility.StartCoroutine(Translate(sourceText, languageDatabaseLegacy.sourceLanguage, translation.country,
                 (trans) =>
                 {
                     _isTranslating = false;
@@ -97,7 +97,7 @@ namespace Localization
             // Set Source Text
             if (GUILayout.Button("Refresh", GUILayout.ExpandWidth(true)))
             {
-                dataList = new List<Word>(languageDatabase.GetDB());
+                dataList = new List<WordLegacy>(languageDatabaseLegacy.GetDB());
                 count = dataList.Count;
                 DisplayMainArea();
             }
@@ -184,7 +184,7 @@ namespace Localization
             
             if (GUILayout.Button("Done"))
             {
-                EditorUtility.SetDirty(languageDatabase);
+                EditorUtility.SetDirty(languageDatabaseLegacy);
                 this.Close();
             }
         }

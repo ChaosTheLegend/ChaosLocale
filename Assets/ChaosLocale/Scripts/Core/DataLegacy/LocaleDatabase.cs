@@ -26,11 +26,11 @@ namespace Locale.Scripts
         public void AddGroup(string title = "new group")
         {
             var group = new WordGroup();
-            group.words = new List<Word>();
+            group.words = new List<WordLegacy>();
             Groups.Add(group);
         }
         
-        public List<Word> GetGroupWords(int groupId)
+        public List<WordLegacy> GetGroupWords(int groupId)
         {
             return Groups[groupId].words;
         }
@@ -43,16 +43,16 @@ namespace Locale.Scripts
             
         public void AddWord(int groupId)
         {
-            var word = new Word();
+            var word = new WordLegacy();
             word.key = "new key";
             word.translations = new List<WordMeaning>();
             word.baseTranslate = "";
             Groups[groupId].words.Add(word);
         }
 
-        public void AddWord(int groupId, Word word)
+        public void AddWord(int groupId, WordLegacy wordLegacy)
         {
-            Groups[groupId].words.Add(word);
+            Groups[groupId].words.Add(wordLegacy);
         }
         
         public void RemoveWord(int groupId, int wordId)

@@ -1,6 +1,4 @@
-﻿using System.CodeDom.Compiler;
-using System.IO;
-using System.Xml.Serialization;
+﻿using System.IO;
 using ChaosLocale.Scripts.Core.Data;
 using Locale.Scripts;
 using UnityEditor;

@@ -27,18 +27,18 @@ namespace Localization
 		/// <param name="sourceText">Word for translation.</param>
 		/// <param name="targetLanguage">Target language.</param>
 		public string GetMeaning(string sourceText, Languages targetLanguage){
-			return Database.GetMeaning(sourceText, targetLanguage);
+			return DatabaseLegacy.GetMeaning(sourceText, targetLanguage);
 		}
 		
 		public string GetRegularMeaning(string sourceText, Languages targetLanguage, params Translation.RegularTranslation[] expressions){
-			return Database.GetRegularTranslation(sourceText, targetLanguage, expressions);
+			return DatabaseLegacy.GetRegularTranslation(sourceText, targetLanguage, expressions);
 		}
 		
 		
 		public List<RegularExpression> GetRegularExpressions(string sourceText)
 		{
 			sourceText = sourceText.ToLower ();
-			var word = Database.GetDB().Find (x => x.word.Equals (sourceText));
+			var word = DatabaseLegacy.GetDB().Find (x => x.word.Equals (sourceText));
 			if (word == null)
 			{
 				Debug.LogError($"There is no word with the key {sourceText}");
@@ -54,16 +54,16 @@ namespace Localization
 			return word.regularExpressions;
 		}
 		
-		[SerializeField] private LanguageDatabase database;
-		private LanguageDatabase Database
+		[FormerlySerializedAs("database")] [SerializeField] private LanguageDatabaseLegacy databaseLegacy;
+		private LanguageDatabaseLegacy DatabaseLegacy
 		{
 			get
 			{
-				if (database == null)
+				if (databaseLegacy == null)
 				{
-					database = Resources.Load<LanguageDatabase>(DATABASE_PATH);
+					databaseLegacy = Resources.Load<LanguageDatabaseLegacy>(DATABASE_PATH);
 				}
-				return database;
+				return databaseLegacy;
 			}
 		}
 	}

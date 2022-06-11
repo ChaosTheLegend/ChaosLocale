@@ -1,18 +1,30 @@
-using System.Collections;
 using System.Collections.Generic;
+using ChaosLocale.Scripts.Core.Data;
+using Sirenix.OdinInspector;
+using Sirenix.OdinInspector.Editor;
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.Serialization;
 
-public class TextLocalizationWindow : MonoBehaviour
+namespace ChaosLocale.Editor.Updated
 {
-    // Start is called before the first frame update
-    void Start()
+    public class TextLocalizationWindow : OdinEditorWindow
     {
-        
-    }
+        [MenuItem("Window/Localization/v3.0", priority = 1)]
+        public static void OpenWindow()
+        {
+            GetWindow<TextLocalizationWindow>().Show();
+        }
 
-    // Update is called once per frame
-    void Update()
-    {
+        [SerializeField] private LanguageDatabase database;
+
+        [TableList]
+        [ShowInInspector]
+        private List<Word> Words
+        {
+            get => database.Words;
+            set => database.Words = value;
+        }
         
     }
 }

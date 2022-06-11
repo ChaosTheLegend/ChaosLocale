@@ -35,7 +35,7 @@ namespace Localization
     [ExecuteInEditMode]
     public class LanguageExporter : MonoBehaviour
     {
-        [SerializeField] private LanguageDatabase db;
+        [SerializeField] private LanguageDatabaseLegacy db;
 
         public void Export(string path)
         {

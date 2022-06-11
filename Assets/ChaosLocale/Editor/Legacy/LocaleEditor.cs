@@ -9,7 +9,7 @@ using UnityEngine.UIElements;
 using ChaosLocale.Scripts;
 using ChaosLocale.Scripts.Core.Data;
 using ChaosLocale.Scripts.Export;
-using Word = Locale.Scripts.Word;
+using WordLegacy = Locale.Scripts.WordLegacy;
 
 public class LocaleEditor : EditorWindow
 {
@@ -20,10 +20,10 @@ public class LocaleEditor : EditorWindow
     private Vector2 scrollPos;
     private string tempTitle;
     private int tab;
-    [MenuItem("Window/Localization/Text Localization")]
+    [MenuItem("Window/Localization/Legacy v2.0")]
     public static void ShowWindow()
     {
-        GetWindow<LocaleEditor>("Text Localization");
+        GetWindow<LocaleEditor>("Localization v2.0");
     }
     
     private void OnEnable()
@@ -294,7 +294,7 @@ public class LocaleEditor : EditorWindow
     {
         var words = db.GetGroupWords(openGroup);
         var word = words[id];
-        var newWord = new Word {key = word.key, baseTranslate = word.baseTranslate, translations = word.translations};
+        var newWord = new WordLegacy {key = word.key, baseTranslate = word.baseTranslate, translations = word.translations};
 
         db.AddWord(openGroup, newWord);
     }

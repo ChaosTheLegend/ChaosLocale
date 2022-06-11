@@ -7,7 +7,7 @@ using Locale.Scripts;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
-using Word = ChaosLocale.Scripts.Core.Data.Word;
+using WordLegacy = ChaosLocale.Scripts.Core.Data.WordLegacy;
 
 namespace Localization
 {
@@ -81,7 +81,7 @@ namespace Localization
             EditorGUILayout.EndHorizontal();
 
 
-            var hasKey = !string.IsNullOrEmpty(label.key) && Database.HasKey(label.key);
+            var hasKey = !string.IsNullOrEmpty(label.key) && DatabaseLegacy.HasKey(label.key);
             EditorGUILayout.BeginHorizontal();
             var style = new GUIStyle();
             var tooltip = "";
@@ -109,7 +109,7 @@ namespace Localization
                         
             if (hasKey)
             {
-                var word = Database.GetWord(label.key);
+                var word = DatabaseLegacy.GetWord(label.key);
                 if (word != null)
                 {
                     if (word.hasRegularExpression) DrawRegularLabel(label, word);
@@ -150,11 +150,11 @@ namespace Localization
             label.text = EditorGUILayout.TextField(label.text);
             EditorGUILayout.EndHorizontal();
         }
-        private void DrawNonRegularLabel(Translation.LabelTranslation label, Word word){
+        private void DrawNonRegularLabel(Translation.LabelTranslation label, WordLegacy wordLegacy){
             
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("Preview:", GUILayout.Width(60));
-            var meaning = Database.GetMeaning(word.word, testLang);
+            var meaning = DatabaseLegacy.GetMeaning(wordLegacy.word, testLang);
             var trueText = label.text.Replace("{t}", meaning);
             EditorGUILayout.LabelField($"{trueText}");
             EditorGUILayout.EndHorizontal();
@@ -163,13 +163,13 @@ namespace Localization
         private void OnKeyChanged(Translation.LabelTranslation label, string newKey)
         {
             if (string.IsNullOrEmpty(newKey)) return;
-            if(!Database.HasKey(newKey)) return;
-            var word = Database.GetWord(label.key);
+            if(!DatabaseLegacy.HasKey(newKey)) return;
+            var word = DatabaseLegacy.GetWord(label.key);
             if(word.hasRegularExpression) UpdateLabelExpressions(label, word);
         }
-        private void UpdateLabelExpressions(Translation.LabelTranslation label, Word word)
+        private void UpdateLabelExpressions(Translation.LabelTranslation label, WordLegacy wordLegacy)
         {
-            var newExpressions = word.regularExpressions;
+            var newExpressions = wordLegacy.regularExpressions;
             var oldExpressions = label.RegularExpressions;
 
             
@@ -202,15 +202,15 @@ namespace Localization
             }
             Repaint();
         }
-        private void DrawRegularLabel(Translation.LabelTranslation label, Word word){
+        private void DrawRegularLabel(Translation.LabelTranslation label, WordLegacy wordLegacy){
             for (int i = 0; i < label.RegularExpressions.Count; i++)
             {
                 var exp = label.RegularExpressions[i];
                 EditorGUILayout.BeginHorizontal();
                 if (exp.recursive)
                 {
-                    var hasKey = !string.IsNullOrEmpty(exp.key) && Database.HasKey(exp.key);
-                    var nonRecursive = hasKey && Database.GetWord(exp.key).hasRegularExpression;
+                    var hasKey = !string.IsNullOrEmpty(exp.key) && DatabaseLegacy.HasKey(exp.key);
+                    var nonRecursive = hasKey && DatabaseLegacy.GetWord(exp.key).hasRegularExpression;
                     var style = new GUIStyle();
                     var tooltip = "";
                     style.normal.textColor = Color.green;
@@ -250,22 +250,22 @@ namespace Localization
 
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("Preview:", GUILayout.Width(60));
-            var meaning = Database.GetRegularTranslation(word.word, testLang, label.RegularExpressions.ToArray());
+            var meaning = DatabaseLegacy.GetRegularTranslation(wordLegacy.word, testLang, label.RegularExpressions.ToArray());
             var trueText = label.text.Replace("{t}", meaning);
             EditorGUILayout.LabelField($"{trueText}");
             EditorGUILayout.EndHorizontal();
 
         }
 
-        private LanguageDatabase database;
-        private LanguageDatabase Database => GetDB();
-        private LanguageDatabase GetDB()
+        private LanguageDatabaseLegacy databaseLegacy;
+        private LanguageDatabaseLegacy DatabaseLegacy => GetDB();
+        private LanguageDatabaseLegacy GetDB()
         {
-            if (database == null)
+            if (databaseLegacy == null)
             {
-                database = (LanguageDatabase) AssetDatabase.LoadAssetAtPath(DATABASE_PATH, typeof(LanguageDatabase));
+                databaseLegacy = (LanguageDatabaseLegacy) AssetDatabase.LoadAssetAtPath(DATABASE_PATH, typeof(LanguageDatabaseLegacy));
             }
-            return database;
+            return databaseLegacy;
         }
     }
 }

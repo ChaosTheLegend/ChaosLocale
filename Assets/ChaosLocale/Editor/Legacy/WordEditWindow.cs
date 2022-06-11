@@ -7,21 +7,21 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
 using LanguageCodes = Locale.Scripts.LanguageCodes;
-using Word = Locale.Scripts.Word;
+using WordLegacy = Locale.Scripts.WordLegacy;
 
 namespace ChaosLocale.Editor
 {
     public class WordEditWindow : EditorWindow
     {
-        private Word _word;
+        private WordLegacy wordLegacy;
         private LocaleDatabase db;
         private Vector2 scrollPos = Vector2.zero;
-        public static void ShowWindow(Word word, LocaleDatabase db)
+        public static void ShowWindow(WordLegacy wordLegacy, LocaleDatabase db)
         {
             var window = GetWindow<WordEditWindow>();
-            window._word = word;
+            window.wordLegacy = wordLegacy;
             window.db = db;
-            window.titleContent = new GUIContent(word.key);
+            window.titleContent = new GUIContent(wordLegacy.key);
             window.Show();
         }
 
@@ -30,12 +30,12 @@ namespace ChaosLocale.Editor
             EditorGUILayout.BeginVertical();
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("Key:", GUILayout.Width(90));
-            _word.key = EditorGUILayout.TextField(_word.key, GUILayout.Width(200));
+            wordLegacy.key = EditorGUILayout.TextField(wordLegacy.key, GUILayout.Width(200));
             EditorGUILayout.EndHorizontal();
             
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("Base Meaning:", GUILayout.Width(90));
-            _word.baseTranslate = EditorGUILayout.TextArea(_word.baseTranslate, GUILayout.Width(200), GUILayout.Height(60));
+            wordLegacy.baseTranslate = EditorGUILayout.TextArea(wordLegacy.baseTranslate, GUILayout.Width(200), GUILayout.Height(60));
             EditorGUILayout.EndHorizontal();
             
             EditorGUILayout.EndVertical();
@@ -51,10 +51,10 @@ namespace ChaosLocale.Editor
             EditorGUILayout.EndHorizontal();
             
             
-            for (var i = 0; i < _word.translations.Count; i++)
+            for (var i = 0; i < wordLegacy.translations.Count; i++)
             {
                 EditorGUILayout.BeginHorizontal();
-                var translation = _word.translations[i];
+                var translation = wordLegacy.translations[i];
                 EditorGUI.BeginDisabledGroup(translation.isLoading);
                 translation.language = (Languages) EditorGUILayout.EnumPopup(translation.language ,GUILayout.Width(90));
                 translation.meaning = EditorGUILayout.TextArea(translation.meaning, GUILayout.Width(200), GUILayout.Height(60));
@@ -67,7 +67,7 @@ namespace ChaosLocale.Editor
                 if (GUILayout.Button("Translate", GUILayout.Width(70)))
                 {
                     translation.isLoading = true;
-                    EditorCoroutineUtility.StartCoroutine(Translate(_word.baseTranslate, db.baseLanguage, translation.language,
+                    EditorCoroutineUtility.StartCoroutine(Translate(wordLegacy.baseTranslate, db.baseLanguage, translation.language,
                         trans =>
                         {
                             translation.meaning = trans;
@@ -101,18 +101,18 @@ namespace ChaosLocale.Editor
 
         private void DeleteMeaning(int id)
         {
-            _word.translations.RemoveAt(id);
+            wordLegacy.translations.RemoveAt(id);
         }
         
         private void CloneMeaning(WordMeaning meaning)
         {
             var newMeaning = new WordMeaning {language = meaning.language, meaning = meaning.meaning};
-            _word.translations.Add(newMeaning);
+            wordLegacy.translations.Add(newMeaning);
         }
         
         private void AddMeaning()
         {
-            _word.translations.Add(new WordMeaning());
+            wordLegacy.translations.Add(new WordMeaning());
             scrollPos = Vector2.positiveInfinity;
         }
         

@@ -5,14 +5,14 @@ using ChaosLocale.Scripts.Core.Data;
 namespace Locale.Scripts
 {
     [Serializable]
-    public class Word
+    public class WordLegacy
     {
         public string key;
         public string baseTranslate;
         public List<WordMeaning> translations;
 
 
-        public Word()
+        public WordLegacy()
         {
             if(translations == null) translations = new List<WordMeaning>();            
         }
