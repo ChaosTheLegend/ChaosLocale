@@ -1,0 +1,7 @@
+﻿{
+  "name": "ChaosLocale",
+  "references":[ 
+    "GUID:351e2452336b4d7c8e7c2cd84a4623d2",
+    "GUID:6055be8ebefd69e48b49212b09b47b2f"
+  ]
+}

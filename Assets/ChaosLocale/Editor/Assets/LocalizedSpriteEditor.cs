@@ -1,4 +1,5 @@
 ﻿using ChaosLocale.Scripts.AssetLocalization;
+using ChaosLocale.Scripts.Core.Data;
 using Locale.Scripts;
 using UnityEditor;
 using UnityEngine;
